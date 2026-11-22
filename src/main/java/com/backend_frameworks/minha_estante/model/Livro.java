@@ -4,6 +4,7 @@ import com.backend_frameworks.minha_estante.enums.Genero;
 import com.backend_frameworks.minha_estante.enums.StatusLeitura;
 import com.backend_frameworks.minha_estante.enums.TipoLeitura;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.util.UUID;
@@ -28,8 +29,14 @@ public class Livro {
     @Column(nullable = false, length = 256)
     private String titulo;
 
-    @Column(nullable = false, length = 4)
+    @Min(1)
+    @Column(nullable = false)
     private Integer paginas;
+
+    @Min(0)
+    @Column(name = "pagina_atual")
+    @Builder.Default
+    private Integer paginaAtual = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
@@ -42,6 +49,6 @@ public class Livro {
     @Enumerated(EnumType.STRING)
     @Column(name = "status_leitura", nullable = false, length = 20)
     @Builder.Default
-    private StatusLeitura statusLeitura = StatusLeitura.LENDO;
+    private StatusLeitura statusLeitura = StatusLeitura.QUERO_LER;
 
 }
