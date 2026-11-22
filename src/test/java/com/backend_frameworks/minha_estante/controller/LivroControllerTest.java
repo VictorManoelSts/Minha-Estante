@@ -37,8 +37,8 @@ class LivroControllerTest {
 
     private final UUID livroId = UUID.randomUUID();
 
-    private final Genero genero = Genero.values()[0];
-    private final TipoLeitura tipo = TipoLeitura.values()[0];
+    private final Genero genero = Genero.FANTASIA;
+    private final TipoLeitura tipo = TipoLeitura.FISICO;
 
     @BeforeEach
     void configurar() {
@@ -49,21 +49,28 @@ class LivroControllerTest {
 
     private String criarJson() {
         return """
-                {
-                  "titulo": "O Hobbit",
-                  "paginas": 310,
-                  "paginaAtual": 150,
-                  "genero": "%s",
-                  "tipoLeitura": "%s",
-                  "statusLeitura": "LENDO"
-                }
-                """.formatted(genero, tipo);
+            {
+              "titulo": "O Hobbit",
+              "autor": "J.R.R. Tolkien",
+              "paginas": 310,
+              "paginaAtual": 150,
+              "genero": "%s",
+              "tipoLeitura": "%s",
+              "statusLeitura": "LENDO"
+            }
+            """.formatted(genero, tipo);
     }
 
     private LivroResponse criarResponse() {
         return new LivroResponse(
-                livroId, "O Hobbit", 310, 150,
-                genero, tipo, StatusLeitura.LENDO
+                livroId,
+                "O Hobbit",
+                "J.R.R. Tolkien",
+                310,
+                150,
+                genero,
+                tipo,
+                StatusLeitura.LENDO
         );
     }
 
@@ -80,6 +87,7 @@ class LivroControllerTest {
                         .content(criarJson()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.titulo").value("O Hobbit"))
+                .andExpect(jsonPath("$.autor").value("J.R.R. Tolkien"))
                 .andExpect(jsonPath("$.paginas").value(310));
 
         verify(livroService).cadastrar(any(LivroRequest.class));
@@ -111,7 +119,8 @@ class LivroControllerTest {
         mockMvc.perform(get("/livros/{id}", livroId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(livroId.toString()))
-                .andExpect(jsonPath("$.titulo").value("O Hobbit"));
+                .andExpect(jsonPath("$.titulo").value("O Hobbit"))
+                .andExpect(jsonPath("$.autor").value("J.R.R. Tolkien"));
 
         verify(livroService).buscarPorId(livroId);
     }
@@ -129,7 +138,8 @@ class LivroControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(criarJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.titulo").value("O Hobbit"));
+                .andExpect(jsonPath("$.titulo").value("O Hobbit"))
+                .andExpect(jsonPath("$.autor").value("J.R.R. Tolkien"));
 
         verify(livroService).atualizar(
                 eq(livroId), any(LivroRequest.class));

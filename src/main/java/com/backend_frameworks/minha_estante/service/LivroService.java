@@ -88,6 +88,7 @@ public class LivroService {
 
     private void preencherDados(Livro livro, LivroRequest request) {
         livro.setTitulo(request.titulo());
+        livro.setAutor(request.autor());
         livro.setPaginas(request.paginas());
         livro.setPaginaAtual(
                 request.paginaAtual() == null ? 0 : request.paginaAtual()
@@ -105,6 +106,7 @@ public class LivroService {
         return new LivroResponse(
                 livro.getId(),
                 livro.getTitulo(),
+                livro.getAutor(),
                 livro.getPaginas(),
                 livro.getPaginaAtual(),
                 livro.getGenero(),

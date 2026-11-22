@@ -9,6 +9,7 @@ import java.util.UUID;
 public record LivroResponse(
         UUID id,
         String titulo,
+        String autor,
         Integer paginas,
         Integer paginaAtual,
         Genero genero,

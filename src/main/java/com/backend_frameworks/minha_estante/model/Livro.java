@@ -25,6 +25,9 @@ public class Livro {
     @Column(nullable = false, length = 256)
     private String titulo;
 
+    @Column(nullable = false, length = 256)
+    private String autor;
+
     @Min(1)
     @Column(nullable = false)
     private Integer paginas;

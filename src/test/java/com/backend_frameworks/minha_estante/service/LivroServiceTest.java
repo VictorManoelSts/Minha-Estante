@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class iLivroServiceTest {
+class LivroServiceTest {
 
     @Mock
     private LivroRepository livroRepository;
@@ -34,6 +34,7 @@ class iLivroServiceTest {
     private LivroRequest criarRequest() {
         return new LivroRequest(
                 "O Hobbit",
+                "J.R.R. Tolkien",
                 310,
                 150,
                 Genero.values()[0],
@@ -46,6 +47,7 @@ class iLivroServiceTest {
         Livro livro = new Livro();
         livro.setId(livroId);
         livro.setTitulo("O Hobbit");
+        livro.setAutor("J.R.R. Tolkien");
         livro.setPaginas(310);
         livro.setPaginaAtual(150);
         livro.setGenero(Genero.values()[0]);
@@ -72,6 +74,7 @@ class iLivroServiceTest {
 
         // Assert
         assertEquals("O Hobbit", resposta.titulo());
+        assertEquals("J.R.R. Tolkien", resposta.autor());
         assertEquals(150, resposta.paginaAtual());
         verify(livroRepository).save(any(Livro.class));
     }
@@ -120,6 +123,7 @@ class iLivroServiceTest {
 
         LivroRequest request = new LivroRequest(
                 "O Hobbit - Nova Edição",
+                "John Ronald Reuel Tolkien",
                 350,
                 200,
                 livro.getGenero(),
@@ -132,6 +136,7 @@ class iLivroServiceTest {
 
         // Assert
         assertEquals("O Hobbit - Nova Edição", resposta.titulo());
+        assertEquals("John Ronald Reuel Tolkien", resposta.autor());
         assertEquals(350, resposta.paginas());
         assertEquals(200, resposta.paginaAtual());
         verify(livroRepository).save(livro);
@@ -159,6 +164,7 @@ class iLivroServiceTest {
         // Arrange
         LivroRequest request = new LivroRequest(
                 "O Hobbit",
+                "J.R.R. Tolkien",
                 310,
                 400,
                 Genero.values()[0],
@@ -204,10 +210,11 @@ class iLivroServiceTest {
         // Arrange
         LivroRequest request = new LivroRequest(
                 "O Hobbit",
+                "J.R.R. Tolkien",
                 310,
                 null,
-                Genero.values()[0],
-                TipoLeitura.values()[0],
+                Genero.FANTASIA,
+                TipoLeitura.FISICO,
                 null
         );
 

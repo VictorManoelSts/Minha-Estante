@@ -13,6 +13,10 @@ public record LivroRequest(
         @Size(max = 256)
         String titulo,
 
+        @NotBlank
+        @Size(max = 256)
+        String autor,
+
         @NotNull
         @Min(1)
         Integer paginas,
