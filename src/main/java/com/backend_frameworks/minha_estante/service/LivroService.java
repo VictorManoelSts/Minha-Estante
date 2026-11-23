@@ -10,6 +10,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.backend_frameworks.minha_estante.enums.Genero;
+import com.backend_frameworks.minha_estante.enums.TipoLeitura;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,13 +33,27 @@ public class LivroService {
         return toResponse(livroRepository.save(livro));
     }
 
+
     @Transactional(readOnly = true)
-    public List<LivroResponse> listar() {
-        return livroRepository.findAll()
+    public List<LivroResponse> listar(
+            String titulo,
+            String autor,
+            Genero genero,
+            TipoLeitura tipoLeitura,
+            StatusLeitura statusLeitura
+    ) {
+        return livroRepository.buscarComFiltros(
+                        titulo,
+                        autor,
+                        genero,
+                        tipoLeitura,
+                        statusLeitura
+                )
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
+
 
     @Transactional(readOnly = true)
     public LivroResponse buscarPorId(UUID livroId) {

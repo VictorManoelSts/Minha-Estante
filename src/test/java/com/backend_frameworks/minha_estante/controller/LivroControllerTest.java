@@ -93,20 +93,147 @@ class LivroControllerTest {
         verify(livroService).cadastrar(any(LivroRequest.class));
     }
 
+
     @Test
     void deveListarLivros() throws Exception {
 
         // Arrange
-        when(livroService.listar())
-                .thenReturn(List.of(criarResponse()));
+        when(livroService.listar(
+                null, null, null, null, null
+        )).thenReturn(List.of(criarResponse()));
 
         // Act e Assert
         mockMvc.perform(get("/livros"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].titulo").value("O Hobbit"))
+                .andExpect(jsonPath("$[0].autor").value("J.R.R. Tolkien"));
+
+        verify(livroService).listar(
+                null, null, null, null, null
+        );
+    }
+
+
+
+
+
+    @Test
+    void deveFiltrarPorTitulo() throws Exception {
+
+        // Arrange
+        when(livroService.listar(
+                "hobbit", null, null, null, null
+        )).thenReturn(List.of(criarResponse()));
+
+        // Act e Assert
+        mockMvc.perform(get("/livros")
+                        .param("titulo", "hobbit"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].titulo").value("O Hobbit"));
 
-        verify(livroService).listar();
+        verify(livroService).listar(
+                "hobbit", null, null, null, null
+        );
     }
+
+    @Test
+    void deveFiltrarPorAutor() throws Exception {
+
+        // Arrange
+        when(livroService.listar(
+                null, "tolkien", null, null, null
+        )).thenReturn(List.of(criarResponse()));
+
+        // Act e Assert
+        mockMvc.perform(get("/livros")
+                        .param("autor", "tolkien"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].autor").value("J.R.R. Tolkien"));
+
+        verify(livroService).listar(
+                null, "tolkien", null, null, null
+        );
+    }
+
+    @Test
+    void deveFiltrarPorGenero() throws Exception {
+
+        // Arrange
+        when(livroService.listar(
+                null, null, Genero.FANTASIA, null, null
+        )).thenReturn(List.of(criarResponse()));
+
+        // Act e Assert
+        mockMvc.perform(get("/livros")
+                        .param("genero", "FANTASIA"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].genero").value("FANTASIA"));
+
+        verify(livroService).listar(
+                null, null, Genero.FANTASIA, null, null
+        );
+    }
+
+    @Test
+    void deveFiltrarPorTipoLeitura() throws Exception {
+
+        // Arrange
+        when(livroService.listar(
+                null, null, null, TipoLeitura.FISICO, null
+        )).thenReturn(List.of(criarResponse()));
+
+        // Act e Assert
+        mockMvc.perform(get("/livros")
+                        .param("tipoLeitura", "FISICO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].tipoLeitura").value("FISICO"));
+
+        verify(livroService).listar(
+                null, null, null, TipoLeitura.FISICO, null
+        );
+    }
+
+    @Test
+    void deveFiltrarPorStatusLeitura() throws Exception {
+
+        // Arrange
+        when(livroService.listar(
+                null, null, null, null, StatusLeitura.LENDO
+        )).thenReturn(List.of(criarResponse()));
+
+        // Act e Assert
+        mockMvc.perform(get("/livros")
+                        .param("statusLeitura", "LENDO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].statusLeitura").value("LENDO"));
+
+        verify(livroService).listar(
+                null, null, null, null, StatusLeitura.LENDO
+        );
+    }
+
+    @Test
+    void deveCombinarGeneroEStatusLeitura() throws Exception {
+
+        // Arrange
+        when(livroService.listar(
+                null, null, Genero.FANTASIA,
+                null, StatusLeitura.LENDO
+        )).thenReturn(List.of(criarResponse()));
+
+        // Act e Assert
+        mockMvc.perform(get("/livros")
+                        .param("genero", "FANTASIA")
+                        .param("statusLeitura", "LENDO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].titulo").value("O Hobbit"));
+
+        verify(livroService).listar(
+                null, null, Genero.FANTASIA,
+                null, StatusLeitura.LENDO
+        );
+    }
+
 
     @Test
     void deveBuscarLivroPorId() throws Exception {

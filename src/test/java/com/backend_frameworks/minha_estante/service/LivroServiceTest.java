@@ -37,8 +37,8 @@ class LivroServiceTest {
                 "J.R.R. Tolkien",
                 310,
                 150,
-                Genero.values()[0],
-                TipoLeitura.values()[0],
+                Genero.FANTASIA,
+                TipoLeitura.FISICO,
                 StatusLeitura.LENDO
         );
     }
@@ -50,8 +50,8 @@ class LivroServiceTest {
         livro.setAutor("J.R.R. Tolkien");
         livro.setPaginas(310);
         livro.setPaginaAtual(150);
-        livro.setGenero(Genero.values()[0]);
-        livro.setTipoLeitura(TipoLeitura.values()[0]);
+        livro.setGenero(Genero.FANTASIA);
+        livro.setTipoLeitura(TipoLeitura.FISICO);
         livro.setStatusLeitura(StatusLeitura.LENDO);
         return livro;
     }
@@ -79,21 +79,105 @@ class LivroServiceTest {
         verify(livroRepository).save(any(Livro.class));
     }
 
+
     @Test
     void deveListarLivros() {
 
         // Arrange
-        when(livroRepository.findAll())
-                .thenReturn(List.of(criarLivro()));
+        Livro livro = criarLivro();
+
+        when(livroRepository.buscarComFiltros(
+                null, null, null, null, null
+        )).thenReturn(List.of(livro));
 
         // Act
-        List<LivroResponse> livros = livroService.listar();
+        List<LivroResponse> livros = livroService.listar(
+                null, null, null, null, null
+        );
 
         // Assert
         assertEquals(1, livros.size());
         assertEquals("O Hobbit", livros.get(0).titulo());
-        verify(livroRepository).findAll();
+
+        verify(livroRepository).buscarComFiltros(
+                null, null, null, null, null
+        );
     }
+
+
+
+    @Test
+    void deveFiltrarLivrosPorGenero() {
+
+        // Arrange
+        Livro livro = criarLivro();
+
+        when(livroRepository.buscarComFiltros(
+                null, null, Genero.FANTASIA, null, null
+        )).thenReturn(List.of(livro));
+
+        // Act
+        List<LivroResponse> resposta = livroService.listar(
+                null, null, Genero.FANTASIA, null, null
+        );
+
+        // Assert
+        assertEquals(1, resposta.size());
+
+        verify(livroRepository).buscarComFiltros(
+                null, null, Genero.FANTASIA, null, null
+        );
+    }
+
+
+    @Test
+    void deveFiltrarLivrosPorStatus() {
+
+        // Arrange
+        Livro livro = criarLivro();
+
+        when(livroRepository.buscarComFiltros(
+                null, null, null, null, StatusLeitura.LIDO
+        )).thenReturn(List.of(livro));
+
+        // Act
+        List<LivroResponse> resposta = livroService.listar(
+                null, null, null, null, StatusLeitura.LIDO
+        );
+
+        // Assert
+        assertEquals(1, resposta.size());
+
+        verify(livroRepository).buscarComFiltros(
+                null, null, null, null, StatusLeitura.LIDO
+        );
+    }
+
+
+    @Test
+    void deveCombinarFiltrosDeAutorEGenero() {
+
+        // Arrange
+        Livro livro = criarLivro();
+
+        when(livroRepository.buscarComFiltros(
+                null, "tolkien", Genero.FANTASIA, null, null
+        )).thenReturn(List.of(livro));
+
+        // Act
+        List<LivroResponse> resposta = livroService.listar(
+                null, "tolkien", Genero.FANTASIA, null, null
+        );
+
+        // Assert
+        assertEquals(1, resposta.size());
+
+        verify(livroRepository).buscarComFiltros(
+                null, "tolkien", Genero.FANTASIA, null, null
+        );
+    }
+
+
 
     @Test
     void deveBuscarLivroPorId() {
