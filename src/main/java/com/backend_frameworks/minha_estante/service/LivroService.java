@@ -8,6 +8,7 @@ import com.backend_frameworks.minha_estante.model.Livro;
 import com.backend_frameworks.minha_estante.repository.LivroRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.backend_frameworks.minha_estante.enums.Genero;
@@ -18,9 +19,11 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LivroService {
 
     private final LivroRepository livroRepository;
+
 
     @Transactional
     public LivroResponse cadastrar(LivroRequest request) {
@@ -30,8 +33,13 @@ public class LivroService {
         Livro livro = new Livro();
         preencherDados(livro, request);
 
-        return toResponse(livroRepository.save(livro));
+        Livro livroSalvo = livroRepository.save(livro);
+
+        log.info("Livro cadastrado. ID: {}", livroSalvo.getId());
+
+        return toResponse(livroSalvo);
     }
+
 
 
     @Transactional(readOnly = true)
@@ -67,16 +75,21 @@ public class LivroService {
 
         validarPaginas(request);
         preencherDados(livro, request);
+        Livro livroSalvo = livroRepository.save(livro);
 
-        return toResponse(livroRepository.save(livro));
+        log.info("Livro atualizado. ID: {}", livroSalvo.getId());
+
+        return toResponse(livroSalvo);
     }
 
     @Transactional
     public void excluir(UUID livroId) {
         Livro livro = buscarLivro(livroId);
-        livroRepository.delete(livro);
-    }
 
+        livroRepository.delete(livro);
+
+        log.info("Exclusão de livro solicitada. ID: {}", livroId);
+    }
     private Livro buscarLivro(UUID livroId) {
         return livroRepository.findById(livroId)
                 .orElseThrow(() ->
