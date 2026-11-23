@@ -252,6 +252,61 @@ class LivroControllerTest {
         verify(livroService).buscarPorId(livroId);
     }
 
+
+    @Test
+    void deveRejeitarLivroComAutorVazio() throws Exception {
+
+        // Arrange
+        String json = """
+            {
+              "titulo": "O Hobbit",
+              "autor": "",
+              "paginas": 310,
+              "paginaAtual": 100,
+              "genero": "FANTASIA",
+              "tipoLeitura": "FISICO",
+              "statusLeitura": "LENDO"
+            }
+            """;
+
+        // Act e Assert
+        mockMvc.perform(post("/livros")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+
+        verify(livroService, never())
+                .cadastrar(any(LivroRequest.class));
+    }
+
+
+    @Test
+    void deveRejeitarLivroComPaginasInvalidas() throws Exception {
+
+        // Arrange
+        String json = """
+            {
+              "titulo": "O Hobbit",
+              "autor": "J.R.R. Tolkien",
+              "paginas": 0,
+              "paginaAtual": 0,
+              "genero": "FANTASIA",
+              "tipoLeitura": "FISICO",
+              "statusLeitura": "LENDO"
+            }
+            """;
+
+        // Act e Assert
+        mockMvc.perform(post("/livros")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+
+        verify(livroService, never())
+                .cadastrar(any(LivroRequest.class));
+    }
+
+
     @Test
     void deveAtualizarLivro() throws Exception {
 
